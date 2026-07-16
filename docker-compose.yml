@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sport_school
+      POSTGRES_USER: sport_school
+      POSTGRES_PASSWORD: sport_school
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sport_school"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./back
+    env_file: ./back/.env.example
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - media_data:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  media_data:
