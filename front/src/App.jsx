@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import DirectionsPage from './pages/DirectionsPage'
+import DirectionDetailPage from './pages/DirectionDetailPage'
 import CoachesPage from './pages/CoachesPage'
 import SchedulePage from './pages/SchedulePage'
 import NewsPage from './pages/NewsPage'
@@ -19,6 +20,7 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="directions" element={<DirectionsPage />} />
+        <Route path="directions/:slug" element={<DirectionDetailPage />} />
         <Route path="coaches" element={<CoachesPage />} />
         <Route path="schedule" element={<SchedulePage />} />
         <Route path="news" element={<NewsPage />} />

@@ -14,12 +14,13 @@ class Command(BaseCommand):
 
         settings = SiteSettings.load()
         settings.site_title = 'Спортивные школы Елабуги'
-        settings.hero_title = 'Спортивные школы Елабуги'
+        settings.hero_title = 'Секции спортивных школ Елабуги'
         settings.hero_subtitle = (
-            'Профессиональные тренеры, современные залы, участие в соревнованиях. '
-            'Развивайте спортивный потенциал вашего ребёнка вместе с нами!'
+            'Выберите секцию — узнайте, где проходят занятия, '
+            'и посмотрите актуальное расписание.'
         )
-        settings.email = 'sport@elabuga.ru'
+        settings.email = 'olymp.elabuga@mail.ru'
+        settings.vk_url = 'https://vk.com/public217310680'
         settings.save()
 
         kama, _ = School.objects.update_or_create(
@@ -40,19 +41,34 @@ class Command(BaseCommand):
             },
         )
 
-        for slug, name, desc, order in [
-            ('olymp', 'СШ «Олимп»', 'Спортивная школа «Олимп»', 2),
-            ('yunost', 'СШ «Юность»', 'Спортивная школа «Юность»', 3),
-        ]:
-            School.objects.update_or_create(
-                slug=slug,
-                defaults={
-                    'name': name,
-                    'short_description': desc,
-                    'order': order,
-                    'is_active': True,
-                },
-            )
+        olymp, _ = School.objects.update_or_create(
+            slug='olymp',
+            defaults={
+                'name': 'МБУ ДО «СШ «Олимп» ЕМР РТ',
+                'short_description': (
+                    'Муниципальное бюджетное учреждение дополнительного образования '
+                    '«Спортивная школа «Олимп» Елабужского муниципального района.'
+                ),
+                'full_description': (
+                    'Полное название: Муниципальное бюджетное учреждение дополнительного '
+                    'образования «Спортивная школа «Олимп» Елабужского муниципального района '
+                    'Республики Татарстан. Директор — Галимов Ильнар Глусович. '
+                    'Есть возможность арендовать футбольный манеж, теннисные корты, ледовую арену.'
+                ),
+                'order': 2,
+                'is_active': True,
+            },
+        )
+
+        School.objects.update_or_create(
+            slug='yunost',
+            defaults={
+                'name': 'СШ «Юность»',
+                'short_description': 'Спортивная школа «Юность»',
+                'order': 3,
+                'is_active': True,
+            },
+        )
 
         facilities_data = [
             {
@@ -71,6 +87,63 @@ class Command(BaseCommand):
                 'order': 1,
             },
             {
+                'slug': 'edinaya-rossiya',
+                'school': olymp,
+                'name': 'СК «Единая Россия»',
+                'facility_type': 'game_hall',
+                'address': 'ул. Тази Гиззата, 31, Елабуга, Респ. Татарстан, 423602',
+                'phone': '8 (855) 573-47-17',
+                'working_hours': '08:00 — 21:00',
+                'description': 'Спортивный комплекс: игровые залы, теннис, танцевальный спорт и другие секции.',
+                'has_hall_rental': True,
+                'hall_rental_note': 'Возможна аренда. Уточняйте по телефону объекта.',
+                'order': 2,
+            },
+            {
+                'slug': 'central-stadium',
+                'school': olymp,
+                'name': 'Центральный стадион',
+                'facility_type': 'other',
+                'address': 'ул. Василия Горшунова, 1, Елабуга, Респ. Татарстан, 423602',
+                'phone': '8 (855) 573-60-24',
+                'working_hours': '08:00 — 21:00',
+                'order': 3,
+            },
+            {
+                'slug': 'atletics-manege',
+                'school': olymp,
+                'name': 'Легкоатлетический манеж',
+                'facility_type': 'other',
+                'address': 'ул. Тази Гиззата, 27а, Елабуга, Респ. Татарстан, 423602',
+                'phone': '8 (855) 573-43-32',
+                'working_hours': '08:00 — 21:00',
+                'order': 4,
+            },
+            {
+                'slug': 'ice-palace',
+                'school': olymp,
+                'name': 'Ледовый дворец',
+                'facility_type': 'other',
+                'address': 'ул. Тази Гиззата, 27, Елабуга, Респ. Татарстан, 423602',
+                'phone': '8 (855) 573-21-00',
+                'working_hours': '08:00 — 21:00',
+                'has_hall_rental': True,
+                'hall_rental_note': 'Возможна аренда ледовой арены. Уточняйте по телефону.',
+                'order': 5,
+            },
+            {
+                'slug': 'august-manege',
+                'school': olymp,
+                'name': 'Футбольный манеж «Август»',
+                'facility_type': 'game_hall',
+                'address': 'ул. Тугарова, 85, Елабуга, Респ. Татарстан, 423602',
+                'phone': '8 (855) 575-71-03',
+                'working_hours': '08:00 — 21:00',
+                'has_hall_rental': True,
+                'hall_rental_note': 'Возможна аренда футбольного манежа. Уточняйте по телефону.',
+                'order': 6,
+            },
+            {
                 'slug': 'tanayka',
                 'school': None,
                 'name': 'ФОК «Танайка»',
@@ -80,7 +153,7 @@ class Command(BaseCommand):
                 'working_hours': '8:00 — 22:00',
                 'has_hall_rental': True,
                 'hall_rental_note': 'Возможна аренда игрового зала. Для записи звоните по указанному телефону.',
-                'order': 2,
+                'order': 7,
             },
             {
                 'slug': 'khlystovo',
@@ -93,7 +166,7 @@ class Command(BaseCommand):
                 'description': 'Бассейн, игровой зал и тренажёрный зал.',
                 'has_hall_rental': True,
                 'hall_rental_note': 'Возможна аренда игрового зала. Для записи звоните по указанному телефону.',
-                'order': 3,
+                'order': 8,
             },
             {
                 'slug': 'chempion',
@@ -107,7 +180,7 @@ class Command(BaseCommand):
                 'description': 'Игровой зал, тренажёрный зал, открытые теннисные корты, бассейн.',
                 'has_hall_rental': True,
                 'hall_rental_note': 'Возможна аренда игрового зала. Для записи звоните по указанному телефону.',
-                'order': 4,
+                'order': 9,
             },
             {
                 'slug': 'lider',
@@ -118,7 +191,7 @@ class Command(BaseCommand):
                 'phone': '+7 (85557) 3-25-74',
                 'working_hours': '8:00 — 21:00',
                 'description': 'Тренажёрный зал. Расписание как у объекта, инструктор отсутствует.',
-                'order': 5,
+                'order': 10,
             },
         ]
 
@@ -152,6 +225,103 @@ class Command(BaseCommand):
             },
         )
 
+        olymp_directions = [
+            {
+                'slug': 'futbol',
+                'name': 'Футбол',
+                'facility': 'august-manege',
+                'coaches': [
+                    'Ахметов Н.М.', 'Валикаев А.Р.', 'Гильфанов Д.Р.',
+                    'Мальчиков С.А.', 'Тухватуллин А.С.',
+                ],
+            },
+            {
+                'slug': 'voleybol',
+                'name': 'Волейбол',
+                'facility': 'edinaya-rossiya',
+                'coaches': ['Турьева А.С.', 'Надеждин Д.А.'],
+            },
+            {
+                'slug': 'tennis',
+                'name': 'Теннис',
+                'facility': 'edinaya-rossiya',
+                'coaches': ['Усманова А.Р.'],
+            },
+            {
+                'slug': 'tancevalnyj-sport',
+                'name': 'Танцевальный спорт',
+                'facility': 'edinaya-rossiya',
+                'coaches': ['Биккинин Р.Р.'],
+            },
+            {
+                'slug': 'badminton',
+                'name': 'Бадминтон',
+                'facility': 'edinaya-rossiya',
+                'coaches': ['Корочкин Н.Е.', 'Тагирова Р.Р.'],
+            },
+            {
+                'slug': 'hudozhestvennaya-gimnastika',
+                'name': 'Художественная гимнастика',
+                'facility': 'edinaya-rossiya',
+                'coaches': ['Раджабова Н.А.', 'Раджабова А.Ш.', 'Чернышова С.Ш.'],
+            },
+            {
+                'slug': 'legkaya-atletika',
+                'name': 'Лёгкая атлетика',
+                'facility': 'atletics-manege',
+                'coaches': ['Шаманаев Б.Н.', 'Рожин М.С.'],
+            },
+            {
+                'slug': 'lyzhnye-gonki',
+                'name': 'Лыжные гонки',
+                'facility': 'central-stadium',
+                'coaches': ['Трущин С.А.', 'Печников К.Д.'],
+            },
+            {
+                'slug': 'figurnoe-katanie',
+                'name': 'Фигурное катание на коньках',
+                'facility': 'ice-palace',
+                'coaches': ['Галимрахманова А.Н.', 'Ахмедова Л.Р.'],
+            },
+            {
+                'slug': 'hokkej',
+                'name': 'Хоккей',
+                'facility': 'ice-palace',
+                'coaches': [
+                    'Жужгов Р.Е.', 'Галимов И.И.', 'Герасимов А.А.', 'Галимов И.С.',
+                ],
+            },
+        ]
+
+        olymp_dirs = {}
+        for i, item in enumerate(olymp_directions):
+            direction, _ = SportDirection.objects.update_or_create(
+                school=olymp,
+                slug=item['slug'],
+                defaults={
+                    'facility': facilities[item['facility']],
+                    'name': item['name'],
+                    'description': (
+                        f'Секция «{item["name"]}» СШ «Олимп». '
+                        f'Занятия проходят: {facilities[item["facility"]].name}.'
+                    ),
+                    'order': i + 2,
+                },
+            )
+            olymp_dirs[item['slug']] = direction
+
+            for j, coach_name in enumerate(item['coaches']):
+                coach, _ = Coach.objects.update_or_create(
+                    school=olymp,
+                    full_name=coach_name,
+                    defaults={
+                        'facility': facilities[item['facility']],
+                        'order': j + 1,
+                        'is_active': True,
+                    },
+                )
+                coach.sport_directions.add(direction)
+
         combat_sports = [
             'Бокс', 'Дзюдо', 'Тхэквондо', 'Вольная борьба', 'Борьба на поясах',
             'Корэш', 'Баскетбол', 'Тяжёлая атлетика', 'Пауэрлифтинг', 'Настольный теннис',
@@ -164,7 +334,7 @@ class Command(BaseCommand):
                     'facility': facilities['lider'],
                     'name': sport,
                     'description': f'Секция «{sport}». Расписание будет обновлено с 1 сентября.',
-                    'order': i + 2,
+                    'order': i + 20,
                 },
             )
 

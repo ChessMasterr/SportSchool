@@ -41,8 +41,14 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 
 class SportDirectionSerializer(serializers.ModelSerializer):
-    school_name = serializers.CharField(source='school.name', read_only=True)
-    facility_name = serializers.CharField(source='facility.name', read_only=True)
+    school_name = serializers.CharField(source='school.name', read_only=True, default=None)
+    facility_name = serializers.CharField(source='facility.name', read_only=True, default=None)
+    facility_slug = serializers.CharField(source='facility.slug', read_only=True, default=None)
+    facility_address = serializers.CharField(source='facility.address', read_only=True, default=None)
+    facility_phone = serializers.CharField(source='facility.phone', read_only=True, default=None)
+    facility_working_hours = serializers.CharField(
+        source='facility.working_hours', read_only=True, default=None
+    )
     level_display = serializers.CharField(source='get_level_display', read_only=True)
     photo_url = serializers.SerializerMethodField()
 
@@ -50,8 +56,10 @@ class SportDirectionSerializer(serializers.ModelSerializer):
         model = SportDirection
         fields = (
             'id', 'school', 'school_name', 'facility', 'facility_name',
-            'name', 'slug', 'description', 'age_from', 'age_to',
-            'level', 'level_display', 'requirements', 'photo_url', 'order',
+            'facility_slug', 'facility_address', 'facility_phone',
+            'facility_working_hours', 'name', 'slug', 'description',
+            'age_from', 'age_to', 'level', 'level_display', 'requirements',
+            'photo_url', 'order',
         )
 
     def get_photo_url(self, obj):

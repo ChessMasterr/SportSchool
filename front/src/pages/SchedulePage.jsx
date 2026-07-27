@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { api, formatTime, paginateResults } from '../api'
 
 export default function SchedulePage() {
+  const [searchParams] = useSearchParams()
   const [tab, setTab] = useState('classes')
   const [schools, setSchools] = useState([])
   const [facilities, setFacilities] = useState([])
@@ -12,10 +14,15 @@ export default function SchedulePage() {
 
   const [filterSchool, setFilterSchool] = useState('')
   const [filterFacility, setFilterFacility] = useState('')
-  const [filterSport, setFilterSport] = useState('')
+  const [filterSport, setFilterSport] = useState(searchParams.get('sport') || '')
   const [sports, setSports] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentPeriod, setCurrentPeriod] = useState(null)
+
+  useEffect(() => {
+    const sport = searchParams.get('sport')
+    if (sport) setFilterSport(sport)
+  }, [searchParams])
 
   useEffect(() => {
     Promise.all([api.getSchools(), api.getFacilities(), api.getSportDirections()])

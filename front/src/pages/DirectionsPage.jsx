@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api, paginateResults } from '../api'
 
 export default function DirectionsPage() {
@@ -30,8 +31,8 @@ export default function DirectionsPage() {
     <>
       <div className="page-header">
         <div className="container">
-          <h1>Направления подготовки</h1>
-          <p>Виды спорта, возраст, требования и стоимость</p>
+          <h1>Секции</h1>
+          <p>Выберите секцию, чтобы узнать место занятий и расписание</p>
         </div>
       </div>
 
@@ -52,11 +53,15 @@ export default function DirectionsPage() {
           {loading ? (
             <div className="loading">Загрузка...</div>
           ) : directions.length === 0 ? (
-            <div className="empty">Направления не найдены</div>
+            <div className="empty">Секции не найдены</div>
           ) : (
             <div className="grid grid--2">
               {directions.map((dir) => (
-                <div key={dir.id} className="card">
+                <Link
+                  key={dir.id}
+                  to={`/directions/${dir.slug}`}
+                  className="card card--link"
+                >
                   {dir.photo_url && (
                     <img src={dir.photo_url} alt={dir.name} className="card__image" />
                   )}
@@ -64,8 +69,11 @@ export default function DirectionsPage() {
                     <h3 className="card__title">{dir.name}</h3>
                     {dir.facility_name && (
                       <p className="card__text">
-                        <strong>Объект:</strong> {dir.facility_name}
+                        <strong>Где:</strong> {dir.facility_name}
                       </p>
+                    )}
+                    {dir.school_name && (
+                      <p className="card__text">{dir.school_name}</p>
                     )}
                     {dir.age_from && (
                       <p className="card__text">
@@ -79,13 +87,9 @@ export default function DirectionsPage() {
                     {dir.description && (
                       <p className="card__text" style={{ marginTop: 12 }}>{dir.description}</p>
                     )}
-                    {dir.requirements && (
-                      <div className="notice" style={{ marginTop: 12 }}>
-                        <strong>Требования:</strong> {dir.requirements}
-                      </div>
-                    )}
+                    <span className="card__cta">Место и расписание →</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

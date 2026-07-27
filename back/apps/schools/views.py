@@ -62,10 +62,11 @@ class CoachFilter(filters.FilterSet):
     school = filters.NumberFilter(field_name='school_id')
     school_slug = filters.CharFilter(field_name='school__slug')
     facility = filters.NumberFilter(field_name='facility_id')
+    sport_direction = filters.NumberFilter(field_name='sport_directions')
 
     class Meta:
         model = Coach
-        fields = ['school', 'school_slug', 'facility']
+        fields = ['school', 'school_slug', 'facility', 'sport_direction']
 
 
 class CoachViewSet(viewsets.ReadOnlyModelViewSet):

@@ -5,7 +5,7 @@ import { api } from '../api'
 const NAV_ITEMS = [
   { to: '/', label: 'Главная', end: true },
   { to: '/about', label: 'О школе' },
-  { to: '/directions', label: 'Направления' },
+  { to: '/directions', label: 'Секции' },
   { to: '/coaches', label: 'Тренеры' },
   { to: '/schedule', label: 'Расписание' },
   { to: '/news', label: 'Новости' },

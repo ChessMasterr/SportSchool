@@ -69,14 +69,19 @@ export default function SearchPage() {
 
               {data.sport_directions?.length > 0 && (
                 <div style={{ marginBottom: 32 }}>
-                  <h2 className="section__title">Направления</h2>
+                  <h2 className="section__title">Секции</h2>
                   {data.sport_directions.map((item) => (
-                    <div key={item.id} className="card" style={{ marginBottom: 12 }}>
+                    <Link
+                      key={item.id}
+                      to={`/directions/${item.slug}`}
+                      className="card card--link"
+                      style={{ marginBottom: 12 }}
+                    >
                       <div className="card__body">
                         <h3 className="card__title">{item.name}</h3>
                         <p className="card__text">{item.facility_name}</p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

@@ -23,5 +23,13 @@ dist/
 .vscode/
 *.swp
 
+# CodeGraph (index DB is machine-local; keep .codegraph/.gitignore)
+.codegraph/*
+!.codegraph/.gitignore
+
 # Docker
 postgres_data/
+
+# Docs / local notes
+.dox/
+

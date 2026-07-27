@@ -21,6 +21,7 @@ export const api = {
   getSchool: (slug) => request(`/schools/${slug}/`),
   getFacilities: (params) => request('/facilities/', params),
   getSportDirections: (params) => request('/sport-directions/', params),
+  getSportDirection: (slug) => request(`/sport-directions/${slug}/`),
   getCoaches: (params) => request('/coaches/', params),
   getPrices: (params) => request('/prices/', params),
   getDocuments: (params) => request('/documents/', params),
