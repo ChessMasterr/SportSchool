@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from apps.content.models import GalleryImage, News, ParentInfo, SiteSettings
+from apps.content.models import GalleryAlbum, GalleryImage, Document, News, ParentInfo, SiteSettings
 from apps.schedules.models import FacilityWorkingSchedule, PoolSession, ScheduleEntry, SchedulePeriod
 from apps.schools.models import Coach, Facility, PriceItem, School, SportDirection
 
@@ -359,6 +359,30 @@ class Command(BaseCommand):
                 defaults={'price': price, 'facility': facilities['kama-pool'], 'order': i + 1},
             )
 
+        # Прейскурант как "документ" (чтобы скачивание/вывод был единообразным)
+        price_doc = Document.objects.filter(school=kama, doc_type='price_list').first()
+        price_content = '<ul>' + ''.join(
+            [
+                f'<li>{name}: <strong>{price}</strong></li>'
+                for (name, price) in prices
+            ]
+        ) + '</ul>'
+        if not price_doc:
+            Document.objects.create(
+                school=kama,
+                doc_type='price_list',
+                title=f'Прейскурант СШ «{kama.name}»',
+                content=price_content,
+                order=1,
+                is_published=True,
+            )
+        else:
+            price_doc.title = f'Прейскурант СШ «{kama.name}»'
+            price_doc.content = price_content
+            price_doc.order = 1
+            price_doc.is_published = True
+            price_doc.save()
+
         period, _ = SchedulePeriod.objects.update_or_create(
             title='Июль 2026',
             school=kama,
@@ -508,5 +532,89 @@ class Command(BaseCommand):
                 category='recruitment',
                 published_at=timezone.now(),
             )
+
+        gallery_albums = [
+            {
+                'slug': 'trenirovki-plavanie',
+                'category': 'training',
+                'title': 'Тренировки секции плавания',
+                'description': 'Тренировочный процесс в бассейне СШ «Кама».',
+                'event_date': '2026-07-10',
+                'school': kama,
+                'order': 1,
+            },
+            {
+                'slug': 'trenirovki-futbol',
+                'category': 'training',
+                'title': 'Тренировки секции футбола',
+                'description': 'Занятия в футбольном манеже «Август».',
+                'event_date': '2026-07-12',
+                'school': olymp,
+                'order': 2,
+            },
+            {
+                'slug': 'kubok-elabugi-futbol-2026',
+                'category': 'competition',
+                'title': 'Кубок Елабуги по футболу',
+                'description': 'Фотографии с городского турнира.',
+                'event_date': '2026-06-15',
+                'school': olymp,
+                'order': 1,
+            },
+            {
+                'slug': 'pervenstvo-plavanie-2026',
+                'category': 'competition',
+                'title': 'Первенство по плаванию',
+                'description': 'Соревнования воспитанников СШ «Кама».',
+                'event_date': '2026-05-20',
+                'school': kama,
+                'order': 2,
+            },
+            {
+                'slug': 'nagrazhdenie-pobeditelej-2026',
+                'category': 'awards',
+                'title': 'Награждение победителей сезона',
+                'description': 'Церемония награждения спортсменов по итогам сезона.',
+                'event_date': '2026-06-01',
+                'school': olymp,
+                'order': 1,
+            },
+            {
+                'slug': 'video-sorevnovaniya',
+                'category': 'video',
+                'title': 'Видео с соревнований',
+                'description': 'Видеозаписи турниров и первенств.',
+                'event_date': '2026-06-15',
+                'school': None,
+                'order': 1,
+            },
+        ]
+        for data in gallery_albums:
+            GalleryAlbum.objects.update_or_create(
+                slug=data['slug'],
+                defaults={
+                    'title': data['title'],
+                    'category': data['category'],
+                    'description': data['description'],
+                    'event_date': data['event_date'],
+                    'school': data['school'],
+                    'order': data['order'],
+                    'is_published': True,
+                },
+            )
+
+        for image in GalleryImage.objects.filter(album__isnull=True):
+            category = image.category if image.category in dict(GalleryAlbum.CATEGORY_CHOICES) else 'training'
+            fallback, _ = GalleryAlbum.objects.get_or_create(
+                slug=f'prochee-{category}',
+                defaults={
+                    'title': f'Прочие материалы: {dict(GalleryAlbum.CATEGORY_CHOICES)[category]}',
+                    'category': category,
+                    'is_published': True,
+                    'order': 99,
+                },
+            )
+            image.album = fallback
+            image.save()
 
         self.stdout.write(self.style.SUCCESS('Начальные данные успешно загружены!'))

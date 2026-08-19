@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Count, Q
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -10,6 +10,7 @@ from apps.schools.serializers import CoachSerializer, FacilitySerializer, SportD
 from .models import (
     CompetitionEvent,
     Document,
+    GalleryAlbum,
     GalleryImage,
     News,
     ParentInfo,
@@ -18,6 +19,8 @@ from .models import (
 from .serializers import (
     CompetitionEventSerializer,
     DocumentSerializer,
+    GalleryAlbumDetailSerializer,
+    GalleryAlbumListSerializer,
     GalleryImageSerializer,
     NewsSerializer,
     ParentInfoSerializer,
@@ -75,10 +78,12 @@ def site_settings_view(request):
 
 class DocumentFilter(filters.FilterSet):
     doc_type = filters.CharFilter()
+    school_slug = filters.CharFilter(field_name='school__slug')
+    school = filters.NumberFilter(field_name='school_id')
 
     class Meta:
         model = Document
-        fields = ['doc_type']
+        fields = ['doc_type', 'school_slug', 'school']
 
 
 class DocumentViewSet(viewsets.ReadOnlyModelViewSet):
@@ -96,16 +101,45 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
 class GalleryFilter(filters.FilterSet):
     category = filters.CharFilter()
     school = filters.NumberFilter(field_name='school_id')
+    album = filters.NumberFilter(field_name='album_id')
+    album_slug = filters.CharFilter(field_name='album__slug')
 
     class Meta:
         model = GalleryImage
-        fields = ['category', 'school']
+        fields = ['category', 'school', 'album', 'album_slug']
 
 
 class GalleryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = GalleryImage.objects.filter(is_published=True).select_related('school')
+    queryset = GalleryImage.objects.filter(is_published=True).select_related('school', 'album')
     serializer_class = GalleryImageSerializer
     filterset_class = GalleryFilter
+
+
+class GalleryAlbumFilter(filters.FilterSet):
+    category = filters.CharFilter()
+    school = filters.NumberFilter(field_name='school_id')
+
+    class Meta:
+        model = GalleryAlbum
+        fields = ['category', 'school']
+
+
+class GalleryAlbumViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+    filterset_class = GalleryAlbumFilter
+    pagination_class = None
+
+    def get_queryset(self):
+        return GalleryAlbum.objects.filter(is_published=True).select_related('school').prefetch_related(
+            'items'
+        ).annotate(
+            items_count=Count('items', filter=Q(items__is_published=True)),
+        )
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return GalleryAlbumDetailSerializer
+        return GalleryAlbumListSerializer
 
 
 class ParentInfoViewSet(viewsets.ReadOnlyModelViewSet):

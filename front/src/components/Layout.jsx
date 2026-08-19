@@ -4,7 +4,6 @@ import { api } from '../api'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Главная', end: true },
-  { to: '/about', label: 'О школе' },
   { to: '/directions', label: 'Секции' },
   { to: '/coaches', label: 'Тренеры' },
   { to: '/schedule', label: 'Расписание' },
@@ -12,7 +11,6 @@ const NAV_ITEMS = [
   { to: '/gallery', label: 'Галерея' },
   { to: '/parents', label: 'Родителям' },
   { to: '/contacts', label: 'Контакты' },
-  { to: '/search', label: 'Поиск' },
 ]
 
 export default function Layout() {
@@ -71,7 +69,7 @@ export default function Layout() {
             </div>
             <div>
               <h4>Разделы</h4>
-              {NAV_ITEMS.slice(1, 6).map(({ to, label }) => (
+              {NAV_ITEMS.filter(({ to }) => to !== '/schedule').slice(1, 6).map(({ to, label }) => (
                 <Link key={to} to={to}>{label}</Link>
               ))}
             </div>

@@ -9,6 +9,7 @@ class School(models.Model):
     short_description = models.TextField('Краткое описание', blank=True)
     full_description = models.TextField('Полное описание', blank=True)
     opened_date = models.DateField('Дата открытия', null=True, blank=True)
+    photo = models.ImageField('Фото школы', upload_to='schools/', blank=True, null=True)
     is_active = models.BooleanField('Активна', default=True)
     order = models.PositiveIntegerField('Порядок', default=0)
 

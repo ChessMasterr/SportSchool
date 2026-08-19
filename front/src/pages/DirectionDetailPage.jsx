@@ -7,6 +7,7 @@ export default function DirectionDetailPage() {
   const [direction, setDirection] = useState(null)
   const [schedule, setSchedule] = useState([])
   const [coaches, setCoaches] = useState([])
+  const [priceDoc, setPriceDoc] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -17,12 +18,15 @@ export default function DirectionDetailPage() {
     api.getSportDirection(slug)
       .then(async (dir) => {
         setDirection(dir)
-        const [sch, coachList] = await Promise.all([
+        const [sch, coachList, docs] = await Promise.all([
           api.getSchedule({ sport_direction: dir.id }),
           api.getCoaches({ sport_direction: dir.id }),
+          dir.school_slug ? api.getDocuments({ school_slug: dir.school_slug, doc_type: 'price_list' }) : Promise.resolve([]),
         ])
         setSchedule(paginateResults(sch))
         setCoaches(paginateResults(coachList))
+        const list = paginateResults(docs)
+        setPriceDoc(list[0] || null)
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
@@ -139,6 +143,30 @@ export default function DirectionDetailPage() {
                     Полное расписание
                   </Link>
                 </div>
+
+                {direction.school_slug && (
+                  <div style={{ marginTop: 12 }}>
+                    {priceDoc?.file_url ? (
+                      <a
+                        href={priceDoc.file_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn--outline"
+                        style={{ borderColor: 'var(--red)', color: 'var(--red)' }}
+                      >
+                        Узнать цену
+                      </a>
+                    ) : (
+                      <Link
+                        to={`/schools/${direction.school_slug}#price-list`}
+                        className="btn btn--outline"
+                        style={{ borderColor: 'var(--red)', color: 'var(--red)' }}
+                      >
+                        Узнать цену
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

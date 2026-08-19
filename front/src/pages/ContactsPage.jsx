@@ -124,27 +124,6 @@ export default function ContactsPage() {
                   </div>
                 </div>
               )}
-
-              <div style={{ marginTop: 48 }}>
-                <h2 className="section__title">Карта</h2>
-                <div
-                  style={{
-                    borderRadius: 'var(--radius)',
-                    overflow: 'hidden',
-                    height: 400,
-                    background: 'var(--gray-200)',
-                  }}
-                >
-                  <iframe
-                    title="Карта Елабуги"
-                    src="https://yandex.ru/map-widget/v1/?um=constructor%3A0&amp;source=constructor&amp;ll=52.054375%2C55.756670&amp;z=12"
-                    width="100%"
-                    height="400"
-                    frameBorder="0"
-                    style={{ border: 0 }}
-                  />
-                </div>
-              </div>
             </>
           )}
         </div>

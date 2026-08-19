@@ -43,11 +43,19 @@ class Document(models.Model):
         ('privacy', 'Политика конфиденциальности'),
         ('admission', 'Правила приёма'),
         ('achievement', 'Достижения'),
+        ('price_list', 'Прейскурант'),
         ('other', 'Другое'),
     ]
 
     title = models.CharField('Название', max_length=255)
     doc_type = models.CharField('Тип', max_length=20, choices=DOC_TYPES, default='other')
+    school = models.ForeignKey(
+        'schools.School',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Школа',
+    )
     file = models.FileField('Файл', upload_to='documents/', blank=True)
     content = models.TextField('Текст', blank=True)
     order = models.PositiveIntegerField('Порядок', default=0)
@@ -93,20 +101,65 @@ class News(models.Model):
         return self.title
 
 
-class GalleryImage(models.Model):
-    """Фотографии галереи."""
+class GalleryAlbum(models.Model):
+    """Альбом галереи — одно мероприятие внутри раздела."""
 
     CATEGORY_CHOICES = [
         ('training', 'Тренировки'),
         ('competition', 'Соревнования'),
         ('awards', 'Награждения'),
-        ('other', 'Другое'),
+        ('video', 'Видео'),
     ]
 
-    title = models.CharField('Название', max_length=255, blank=True)
-    image = models.ImageField('Фото', upload_to='gallery/')
+    title = models.CharField('Название', max_length=255)
+    slug = models.SlugField('URL-имя', unique=True)
     category = models.CharField(
-        'Категория', max_length=20, choices=CATEGORY_CHOICES, default='other'
+        'Раздел', max_length=20, choices=CATEGORY_CHOICES, default='training'
+    )
+    description = models.TextField('Описание', blank=True)
+    event_date = models.DateField('Дата мероприятия', null=True, blank=True)
+    cover = models.ImageField('Обложка', upload_to='gallery/covers/', blank=True)
+    school = models.ForeignKey(
+        'schools.School',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Школа',
+    )
+    order = models.PositiveIntegerField('Порядок', default=0)
+    is_published = models.BooleanField('Опубликовано', default=True)
+
+    class Meta:
+        verbose_name = 'Мероприятие галереи'
+        verbose_name_plural = 'Галерея: мероприятия'
+        ordering = ['order', '-event_date', '-id']
+
+    def __str__(self):
+        return self.title
+
+
+class GalleryImage(models.Model):
+    """Фото или видео внутри альбома."""
+
+    CATEGORY_CHOICES = GalleryAlbum.CATEGORY_CHOICES
+
+    album = models.ForeignKey(
+        GalleryAlbum,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name='Альбом',
+        null=True,
+        blank=True,
+    )
+    title = models.CharField('Название', max_length=255, blank=True)
+    image = models.ImageField('Фото', upload_to='gallery/', blank=True)
+    video_url = models.URLField(
+        'Видео (URL)',
+        blank=True,
+        help_text='Ссылка на YouTube, VK или другой видеохостинг',
+    )
+    category = models.CharField(
+        'Раздел', max_length=20, choices=CATEGORY_CHOICES, default='training'
     )
     school = models.ForeignKey(
         'schools.School',
@@ -120,12 +173,19 @@ class GalleryImage(models.Model):
     created_at = models.DateTimeField('Дата загрузки', auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Фото галереи'
-        verbose_name_plural = 'Галерея'
+        verbose_name = 'Фото / видео галереи'
+        verbose_name_plural = 'Фото и видео галереи'
         ordering = ['order', '-created_at']
 
     def __str__(self):
-        return self.title or f'Фото #{self.pk}'
+        return self.title or f'Материал #{self.pk}'
+
+    def save(self, *args, **kwargs):
+        if self.album_id:
+            self.category = self.album.category
+            if not self.school_id:
+                self.school_id = self.album.school_id
+        super().save(*args, **kwargs)
 
 
 class ParentInfo(models.Model):

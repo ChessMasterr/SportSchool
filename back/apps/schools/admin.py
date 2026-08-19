@@ -1,12 +1,13 @@
 from django.contrib import admin
 
 from .models import Coach, Facility, PriceItem, School, SportDirection
+from apps.content.models import Document
 
 
 class FacilityInline(admin.TabularInline):
     model = Facility
     extra = 0
-    fields = ('name', 'facility_type', 'address', 'phone', 'working_hours', 'is_active', 'order')
+    fields = ('name', 'facility_type', 'address', 'phone', 'working_hours', 'photo', 'is_active', 'order')
 
 
 class SportDirectionInline(admin.TabularInline):
@@ -15,10 +16,12 @@ class SportDirectionInline(admin.TabularInline):
     fields = ('name', 'age_from', 'age_to', 'is_active', 'order')
 
 
-class PriceItemInline(admin.TabularInline):
-    model = PriceItem
-    extra = 0
-    fields = ('name', 'price', 'valid_from', 'order')
+class DocumentInline(admin.TabularInline):
+    model = Document
+    extra = 1
+    fields = ('doc_type', 'title', 'file', 'content', 'is_published', 'order')
+    verbose_name = 'документ школы'
+    verbose_name_plural = 'Документы школы'
 
 
 @admin.register(School)
@@ -27,7 +30,8 @@ class SchoolAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
-    inlines = [FacilityInline, SportDirectionInline, PriceItemInline]
+    fields = ('name', 'slug', 'short_description', 'full_description', 'opened_date', 'photo', 'is_active', 'order')
+    inlines = [FacilityInline, SportDirectionInline, DocumentInline]
 
 
 @admin.register(Facility)

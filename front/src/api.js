@@ -28,6 +28,8 @@ export const api = {
   getNews: () => request('/news/'),
   getNewsItem: (slug) => request(`/news/${slug}/`),
   getGallery: (params) => request('/gallery/', params),
+  getGalleryAlbums: (params) => request('/gallery/albums/', params),
+  getGalleryAlbum: (slug) => request(`/gallery/albums/${slug}/`),
   getParents: () => request('/parents/'),
   getCompetitions: () => request('/competitions/'),
   getSchedulePeriods: (params) => request('/schedule-periods/', params),
@@ -35,7 +37,6 @@ export const api = {
   getSchedule: (params) => request('/schedule/', params),
   getPoolSessions: (params) => request('/pool-sessions/', params),
   getWorkingSchedules: (params) => request('/working-schedules/', params),
-  search: (q) => request('/search/', { q }),
 }
 
 export function formatTime(time) {

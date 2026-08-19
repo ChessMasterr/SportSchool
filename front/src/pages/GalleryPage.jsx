@@ -1,86 +1,36 @@
-import { useEffect, useState } from 'react'
-import { api, paginateResults } from '../api'
-
-const CATEGORIES = {
-  training: 'Тренировки',
-  competition: 'Соревнования',
-  awards: 'Награждения',
-  other: 'Другое',
-}
+import { Link } from 'react-router-dom'
+import { GALLERY_SECTIONS } from '../gallery'
 
 export default function GalleryPage() {
-  const [images, setImages] = useState([])
-  const [filter, setFilter] = useState('')
-  const [lightbox, setLightbox] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true)
-    const params = filter ? { category: filter } : {}
-    api.getGallery(params)
-      .then((data) => setImages(paginateResults(data)))
-      .catch(() => setImages([]))
-      .finally(() => setLoading(false))
-  }, [filter])
-
   return (
     <>
       <div className="page-header">
         <div className="container">
           <h1>Галерея</h1>
-          <p>Фотографии тренировок, соревнований и награждений</p>
+          <p>Фотографии тренировок, соревнований, награждений и видео</p>
         </div>
       </div>
 
       <section className="section">
         <div className="container">
-          <div className="filters">
-            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-              <option value="">Все категории</option>
-              {Object.entries(CATEGORIES).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
-            </select>
-          </div>
-
-          {loading ? (
-            <div className="loading">Загрузка...</div>
-          ) : images.length === 0 ? (
-            <div className="empty">
-              Фотографии будут добавлены администратором через панель управления.
-            </div>
-          ) : (
-            <div className="gallery-grid">
-              {images.map((img) => (
-                <div
-                  key={img.id}
-                  className="gallery-item"
-                  onClick={() => setLightbox(img)}
-                >
-                  <img src={img.image_url} alt={img.title || 'Фото'} loading="lazy" />
+          <div className="grid grid--2">
+            {GALLERY_SECTIONS.map((section) => (
+              <Link
+                key={section.key}
+                to={`/gallery/${section.key}`}
+                className="card card--link gallery-section-card"
+              >
+                <div className="card__body">
+                  <span className="gallery-section-card__icon">{section.icon}</span>
+                  <h2 className="card__title">{section.title}</h2>
+                  <p className="card__text">{section.text}</p>
+                  <span className="card__cta">Открыть раздел →</span>
                 </div>
-              ))}
-            </div>
-          )}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
-
-      {lightbox && (
-        <div
-          onClick={() => setLightbox(null)}
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 1000, padding: 20, cursor: 'pointer',
-          }}
-        >
-          <img
-            src={lightbox.image_url}
-            alt={lightbox.title || ''}
-            style={{ maxHeight: '90vh', maxWidth: '90vw', borderRadius: 8 }}
-          />
-        </div>
-      )}
     </>
   )
 }

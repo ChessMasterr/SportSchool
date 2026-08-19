@@ -91,3 +91,4 @@ class PriceItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PriceItem.objects.select_related('school', 'facility')
     serializer_class = PriceItemSerializer
     filterset_class = PriceItemFilter
+    pagination_class = None

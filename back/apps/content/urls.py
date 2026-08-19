@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CompetitionEventViewSet,
     DocumentViewSet,
+    GalleryAlbumViewSet,
     GalleryViewSet,
     NewsViewSet,
     ParentInfoViewSet,
@@ -14,6 +15,7 @@ from .views import (
 router = DefaultRouter()
 router.register('documents', DocumentViewSet, basename='document')
 router.register('news', NewsViewSet, basename='news')
+router.register('gallery/albums', GalleryAlbumViewSet, basename='gallery-album')
 router.register('gallery', GalleryViewSet, basename='gallery')
 router.register('parents', ParentInfoViewSet, basename='parent-info')
 router.register('competitions', CompetitionEventViewSet, basename='competition')

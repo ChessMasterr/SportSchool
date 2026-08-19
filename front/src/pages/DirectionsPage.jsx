@@ -5,16 +5,13 @@ import { api, paginateResults } from '../api'
 export default function DirectionsPage() {
   const [directions, setDirections] = useState([])
   const [schools, setSchools] = useState([])
-  const [prices, setPrices] = useState([])
   const [filterSchool, setFilterSchool] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([api.getSchools(), api.getPrices()])
-      .then(([sch, pr]) => {
-        setSchools(paginateResults(sch))
-        setPrices(paginateResults(pr))
-      })
+    api
+      .getSchools()
+      .then((sch) => setSchools(paginateResults(sch)))
       .catch(() => {})
   }, [])
 
@@ -94,32 +91,6 @@ export default function DirectionsPage() {
             </div>
           )}
 
-          {prices.length > 0 && (
-            <div style={{ marginTop: 60 }}>
-              <h2 className="section__title">Прейскурант</h2>
-              <p className="section__subtitle">Стоимость услуг СШ «Кама»</p>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>№</th>
-                      <th>Наименование услуги</th>
-                      <th>Стоимость (руб.)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {prices.map((item, i) => (
-                      <tr key={item.id}>
-                        <td>{i + 1}</td>
-                        <td>{item.name}</td>
-                        <td><strong>{item.price}</strong></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
         </div>
       </section>
     </>

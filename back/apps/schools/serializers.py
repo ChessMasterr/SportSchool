@@ -4,18 +4,41 @@ from .models import Coach, Facility, PriceItem, School, SportDirection
 
 
 class SchoolListSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
     class Meta:
         model = School
-        fields = ('id', 'name', 'slug', 'short_description', 'opened_date', 'order')
+        fields = (
+            'id', 'name', 'slug', 'short_description',
+            'opened_date', 'order', 'photo_url',
+        )
+
+    def get_photo_url(self, obj):
+        if obj.photo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.photo.url)
+            return obj.photo.url
+        return None
 
 
 class SchoolDetailSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
     class Meta:
         model = School
         fields = (
             'id', 'name', 'slug', 'short_description', 'full_description',
-            'opened_date', 'order',
+            'opened_date', 'order', 'photo_url',
         )
+
+    def get_photo_url(self, obj):
+        if obj.photo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.photo.url)
+            return obj.photo.url
+        return None
 
 
 class FacilitySerializer(serializers.ModelSerializer):
@@ -42,6 +65,7 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 class SportDirectionSerializer(serializers.ModelSerializer):
     school_name = serializers.CharField(source='school.name', read_only=True, default=None)
+    school_slug = serializers.CharField(source='school.slug', read_only=True, default=None)
     facility_name = serializers.CharField(source='facility.name', read_only=True, default=None)
     facility_slug = serializers.CharField(source='facility.slug', read_only=True, default=None)
     facility_address = serializers.CharField(source='facility.address', read_only=True, default=None)
@@ -59,7 +83,9 @@ class SportDirectionSerializer(serializers.ModelSerializer):
             'facility_slug', 'facility_address', 'facility_phone',
             'facility_working_hours', 'name', 'slug', 'description',
             'age_from', 'age_to', 'level', 'level_display', 'requirements',
-            'photo_url', 'order',
+            'school_slug',
+            'photo_url',
+            'order',
         )
 
     def get_photo_url(self, obj):
@@ -99,6 +125,13 @@ class CoachSerializer(serializers.ModelSerializer):
 
 
 class PriceItemSerializer(serializers.ModelSerializer):
+    school_name = serializers.CharField(source='school.name', read_only=True, default=None)
+    school_slug = serializers.CharField(source='school.slug', read_only=True, default=None)
+    facility_name = serializers.CharField(source='facility.name', read_only=True, default=None)
+
     class Meta:
         model = PriceItem
-        fields = ('id', 'school', 'facility', 'name', 'price', 'valid_from', 'order')
+        fields = (
+            'id', 'school', 'school_name', 'school_slug',
+            'facility', 'facility_name', 'name', 'price', 'valid_from', 'order',
+        )
