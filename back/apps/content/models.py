@@ -11,9 +11,6 @@ class SiteSettings(models.Model):
     email = models.EmailField('E-mail', blank=True)
     vk_url = models.URLField('ВКонтакте', blank=True)
     telegram_url = models.URLField('Telegram', blank=True)
-    price_list_file = models.FileField(
-        'Файл прейскуранта (аренда)', upload_to='documents/', blank=True
-    )
 
     class Meta:
         verbose_name = 'Настройки сайта'

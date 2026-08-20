@@ -13,13 +13,12 @@ from .models import (
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
     hero_image_url = serializers.SerializerMethodField()
-    price_list_file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SiteSettings
         fields = (
             'site_title', 'hero_title', 'hero_subtitle', 'hero_image_url',
-            'email', 'vk_url', 'telegram_url', 'price_list_file_url',
+            'email', 'vk_url', 'telegram_url',
         )
 
     def get_hero_image_url(self, obj):
@@ -28,14 +27,6 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.hero_image.url)
             return obj.hero_image.url
-        return None
-
-    def get_price_list_file_url(self, obj):
-        if obj.price_list_file:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.price_list_file.url)
-            return obj.price_list_file.url
         return None
 
 

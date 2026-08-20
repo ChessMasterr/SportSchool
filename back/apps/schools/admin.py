@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Coach, Facility, PriceItem, School, SportDirection
+from .models import Coach, Facility, School, SportDirection
 from apps.content.models import Document
 
 
@@ -56,10 +56,3 @@ class CoachAdmin(admin.ModelAdmin):
     list_filter = ('school', 'facility', 'is_active')
     search_fields = ('full_name',)
     filter_horizontal = ('sport_directions',)
-
-
-@admin.register(PriceItem)
-class PriceItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'school', 'facility', 'price', 'valid_from', 'order')
-    list_filter = ('school', 'facility')
-    search_fields = ('name',)

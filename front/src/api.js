@@ -23,7 +23,6 @@ export const api = {
   getSportDirections: (params) => request('/sport-directions/', params),
   getSportDirection: (slug) => request(`/sport-directions/${slug}/`),
   getCoaches: (params) => request('/coaches/', params),
-  getPrices: (params) => request('/prices/', params),
   getDocuments: (params) => request('/documents/', params),
   getNews: () => request('/news/'),
   getNewsItem: (slug) => request(`/news/${slug}/`),

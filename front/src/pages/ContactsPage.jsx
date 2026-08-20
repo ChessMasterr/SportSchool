@@ -69,13 +69,6 @@ export default function ContactsPage() {
                     {fac.has_hall_rental && (
                       <div className="notice" style={{ marginTop: 12 }}>
                         {fac.hall_rental_note || 'Возможна аренда зала. Звоните по указанному телефону.'}
-                        {settings?.price_list_file_url && (
-                          <div style={{ marginTop: 8 }}>
-                            <a href={settings.price_list_file_url} target="_blank" rel="noreferrer">
-                              Скачать прейскурант
-                            </a>
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>

@@ -53,9 +53,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Контакты и соцсети', {
             'fields': ('email', 'vk_url', 'telegram_url'),
         }),
-        ('Файлы', {
-            'fields': ('price_list_file',),
-        }),
     )
 
     def has_add_permission(self, request):
@@ -135,15 +132,6 @@ class GalleryAlbumAdmin(admin.ModelAdmin):
             created += 1
         if created:
             messages.success(request, f'Добавлено фото: {created}')
-
-
-@admin.register(GalleryImage)
-class GalleryImageAdmin(admin.ModelAdmin):
-    list_display = ('title', 'album', 'category', 'school', 'is_published', 'order', 'created_at')
-    list_filter = ('category', 'album', 'school', 'is_published')
-    search_fields = ('title', 'album__title')
-    autocomplete_fields = ('album',)
-    fields = ('album', 'title', 'image', 'video_url', 'order', 'is_published')
 
 
 @admin.register(ParentInfo)
